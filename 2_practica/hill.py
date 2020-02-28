@@ -1,3 +1,7 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+from __future__ import division
+import os, sys
 import random
 class Hill():
 
@@ -14,29 +18,31 @@ class Hill():
     
         self.alphabet = alphabet
         self.n = n
-        if(key and is_valid(key)):
+        if(key):
             self.key = key
         elif(key):
-            self.key = generate_key()
-        else:
             raise CryptographyException('Invalid key!!')
+        else:
+            self.key = generate_key()
             
     def cipher(self, message):
         """
         Aplica el algoritmo de cifrado con respecto al criptosistema de Hill, el cual recordando
         que todas las operaciones son mod |alphabet|.
-        :param message: El mensaje a enviar que debe ser cifrado.
+        :param messa{ge: El mensaje a enviar que debe ser cifrado.
         :return: Un criptotexto correspondiente al mensaje, este debe de estar en representación de
         cadena, no lista.
         """
         encripted_message = ""
-        for i in range(len(self.key)):
+        for i in range(self.n-1):
             encripted_number = 0 
-            for j in range(len(self.key)):
-                encripted_number += ord(self.key[i*self.n + j]) * ord(message[j])
+            for j in range((self.n)):
+                print(i,j)
+                print(self.n * i +j)
+                encripted_number +=(ord(self.key[(i*self.n + j)]) * ord(message[j]))%27
             encripted_message += chr(encripted_number)
         return encripted_message
-            
+  
 
     def decipher(self, ciphered):
         """
@@ -45,6 +51,17 @@ class Hill():
         :param ciphered: El criptotexto de algún mensaje posible.
         :return: El texto plano correspondiente a manera de cadena.
         """
+        det = 1/calculate_determinant(self.key)
+        invers = ""
+        resolved = ""
+        for i in range(self.n):
+            for j in range(self.n):
+	            invers += self.key[j*self.n+i]*det
+        for i in range(self.n):
+            for j in range(self.n):
+                resolved += chr((invers[i*self.n + j] * ord(ciphered[j]))%27)
+        return resolved
+        
         
     def _generate_key(self):
         self.key = ""
@@ -53,5 +70,12 @@ class Hill():
             
         
         
-        
-        
+alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
+cipher = None
+key2 = "EBAY"
+
+prueba=Hill(alphabet,4,key2)
+
+cifrado=prueba.cipher("UN MENSAJE CON Ñ")
+
+print(cifrado)
