@@ -1,2 +1,2 @@
 # PracticasCriptografia
-Practicas del semestre 
+Prácticas del semestre 
