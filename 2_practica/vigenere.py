@@ -21,7 +21,7 @@ class Vigenere():
         	self.password=password
         else:
             self.password=""
-            length=rn.randint(6,mt.floor(rn.random()*100))
+            length=rn.randint(6,mt.floor(rn.random()*100)+6)
             for i in range(length):
                 self.password+=self.alphabet[rn.randint(0,len(self.alphabet)-1)]
 
