@@ -1,7 +1,11 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+import os, sys
+
 from vigenere import Vigenere
 
-alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
-message = "ESTEESUNMENSAJECONÑ"
+alphabet = "ABCDEFGHIJKLMN\xc3OPQRSTUVWXYZ"
+message = "ESTEESUNMENSAJECON\xc3"
 short = "PASS"
 long = "ENDURECIDAMENTE"
 semi_long = "ENDURECIMIENTO"
