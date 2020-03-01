@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os, sys
 import random as rn
+import math as mt
 
 class Vigenere():
 
@@ -19,9 +20,10 @@ class Vigenere():
         if password:
         	self.password=password
         else:
-        	self.password=""
-        	for i in range(6):
-        		self.password+=self.alphabet[rn.randint(0,len(self.alphabet)-1)]
+            self.password=""
+            length=rn.randint(6,mt.floor(rn.random()*100))
+            for i in range(length):
+                self.password+=self.alphabet[rn.randint(0,len(self.alphabet)-1)]
 
     def cipher(self, message):
         """
