@@ -34,14 +34,20 @@ class Hill():
         cadena, no lista.
         """
         encripted_message = ""
-        for i in range(self.n-1):
-            encripted_number = 0 
-            for j in range((self.n)):
-                print(i,j)
-                print(self.n * i +j)
-                encripted_number +=(ord(self.key[(i*self.n + j)]) * ord(message[j]))%27
-            encripted_message += chr(encripted_number)
-        return encripted_message
+        encripted_number = 0
+        i = 0
+        j = 0
+        k = 0
+        while(j < 2):
+            while(i < 2):
+                encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i])
+                i += 1
+                k += 1
+            i = 0
+            j += 1
+            encripted_message += self.alphabet[encripted_number%27]
+            encripted_number = 0
+        print(encripted_message)
   
 
     def decipher(self, ciphered):
