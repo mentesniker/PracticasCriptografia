@@ -26,13 +26,6 @@ class Hill():
             self.key = generate_key()
             
     def cipher(self, message):
-        """
-        Aplica el algoritmo de cifrado con respecto al criptosistema de Hill, el cual recordando
-        que todas las operaciones son mod |alphabet|.
-        :param messa{ge: El mensaje a enviar que debe ser cifrado.
-        :return: Un criptotexto correspondiente al mensaje, este debe de estar en representación de
-        cadena, no lista.
-        """
         encripted_message = ""
         encripted_number = 0
         i = 0
@@ -40,15 +33,15 @@ class Hill():
         k = 0
         while(j < 2):
             while(i < 2):
-                encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i])
-                i += 1
-                k += 1
+            	encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
+            	i += 1
+            	k += 1
             i = 0
             j += 1
             encripted_message += self.alphabet[encripted_number%27]
             encripted_number = 0
         print(encripted_message)
-  
+
 
     def decipher(self, ciphered):
         """
