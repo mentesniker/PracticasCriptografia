@@ -26,21 +26,41 @@ class Hill():
             self.key = generate_key()
             
     def cipher(self, message):
+        message = message.replace(" ","")
+        ciphermessage = ""
+        if(len(message)%2 != 0):
+            message += "A"
+        i = 0
+        while(i < len(message)):
+            ciphermessage += self.cipher_two_chars(i,message)
+            i += 2
+        return ciphermessage
+
+    def cipher_two_chars(self,indice,message):
+        """
+        Funcion auxiliar que hace el cifrado de dos caracteres,utilizando
+        el cifrado hill.
+        :param indice: el indice desde el cual empezamos a tomar los caracteres
+        del mensaje que se recibe como parametro.
+        :param message: el mensaje que queremos cifrar
+        :return: un string con los dos caracteres cifrados.
+        """
         encripted_message = ""
         encripted_number = 0
-        i = 0
+        i = indice
         j = 0
         k = 0
-        while(j < 2):
-            while(i < 2):
-            	encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
-            	i += 1
-            	k += 1
-            i = 0
+        while(j < 4):
+            if(j == 2):
+                i = indice
+                encripted_message += self.alphabet[encripted_number%27]
+                encripted_number = 0
+            encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
+            i += 1
+            k += 1
             j += 1
-            encripted_message += self.alphabet[encripted_number%27]
-            encripted_number = 0
-        print(encripted_message)
+        encripted_message += self.alphabet[encripted_number%27]
+        return encripted_message
 
 
     def decipher(self, ciphered):
