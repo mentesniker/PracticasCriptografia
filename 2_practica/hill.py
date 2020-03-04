@@ -3,6 +3,8 @@
 from __future__ import division
 import os, sys
 import random
+import math
+
 class Hill():
 
     def __init__(self, alphabet, n, key=None):
@@ -32,11 +34,11 @@ class Hill():
             message += "A"
         i = 0
         while(i < len(message)):
-            ciphermessage += self.cipher_two_chars(i,message)
-            i += 2
+            ciphermessage += self.cipher_sqrt_chars(i,message)
+            i += int(math.sqrt(len(self.key)))
         return ciphermessage
 
-    def cipher_two_chars(self,indice,message):
+    def cipher_sqrt_chars(self,indice,message):
         """
         Funcion auxiliar que hace el cifrado de dos caracteres,utilizando
         el cifrado hill.
@@ -50,16 +52,16 @@ class Hill():
         i = indice
         j = 0
         k = 0
-        while(j < 4):
-            if(j == 2):
-                i = indice
-                encripted_message += self.alphabet[encripted_number%27]
-                encripted_number = 0
+        sqrt_n = int(math.sqrt(len(self.key)))
+        while(j < len(self.key)):
             encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
             i += 1
             k += 1
             j += 1
-        encripted_message += self.alphabet[encripted_number%27]
+            if(j % sqrt_n == 0):
+                i = indice
+                encripted_message += self.alphabet[encripted_number%27]
+                encripted_number = 0
         return encripted_message
 
 
@@ -98,3 +100,7 @@ prueba=Hill(alphabet,4,key2)
 cifrado=prueba.cipher("UN MENSAJE CON Ñ")
 
 print(cifrado)
+
+criptotext = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
+print(criptotext)
+
