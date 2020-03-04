@@ -25,7 +25,7 @@ class Hill():
         elif(key):
             raise CryptographyException('Invalid key!!')
         else:
-            self.key = generate_key()
+            self.generate_key()
             
     def cipher(self, message):
         message = message.replace(" ","")
@@ -72,30 +72,42 @@ class Hill():
         :param ciphered: El criptotexto de algún mensaje posible.
         :return: El texto plano correspondiente a manera de cadena.
         """
-        det = 1/calculate_determinant(self.key)
+        det = 1/self.calculate_determinant(self.key)
         invers = ""
         resolved = ""
-        for i in range(self.n):
-            for j in range(self.n):
-	            invers += self.key[j*self.n+i]*det
-        for i in range(self.n):
-            for j in range(self.n):
-                resolved += chr((invers[i*self.n + j] * ord(ciphered[j]))%27)
+        encripted_message = ""
+        encripted_number = 0
+        i = indice
+        j = 0
+        k = 0
+        sqrt_n = int(math.sqrt(len(self.key)))
+        while(j < len(self.key)):
+            encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
+            i += 1
+            k += 1
+            j += 1
+            if(j % sqrt_n == 0):
+                i = indice
+                resolved += self.alphabet[encripted_number%27]
+                encripted_number = 0
+       
         return resolved
         
         
-    def _generate_key(self):
+    def generate_key(self):
         self.key = ""
-        for i in range(self.n**2):
-            self.key+=chr(random.randint(self.n))
+        for i in range(self.n):
+            self.key+= self.alphabet[random.randint(0,self.n)]
             
-        
-        
+    #Pre: len(key) == 4    
+    def calculate_determinant(self, key):
+        return self.alphabet.find(key[0])*self.alphabet.find(key[3])-self.alphabet.find(key[2])*self.alphabet.find(key[1])  
+             
 alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 cipher = None
 key2 = "EBAY"
 
-prueba=Hill(alphabet,4,key2)
+prueba=Hill(alphabet,4)
 
 cifrado=prueba.cipher("UN MENSAJE CON Ñ")
 
@@ -104,3 +116,9 @@ print(cifrado)
 criptotext = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
 print(criptotext)
 
+c1 = prueba.cipher("UN MENSAJE CON Ñ")
+print(c1)
+#print(prueba.decipher(c1) == "UNMENSAJECONÑA")
+c2 = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
+#print(prueba.decipher(c2) == "UNMENSAJEDELONGITUDPAR")
+print(c2)
