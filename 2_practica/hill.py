@@ -64,23 +64,51 @@ class Hill():
                 encripted_number = 0
         return encripted_message
 
-
     def decipher(self, message):
+        print(self.key)
+        message = message.replace(" ","")
+        ciphermessage = ""
+        if(len(message)%2 != 0):
+            message += "A"
+        i = 0
+        while(i < len(message)):
+            ciphermessage += self.decipher_two_chars(i,message)
+            i += int(math.sqrt(len(self.key)))
+        return ciphermessage
+
+
+
+    def modinv(self, a, m): 
+        g, x, y = self.egcd(a, m) 
+        if g != 1: 
+            raise Exception('modular inverse does not exist') 
+        else: 
+            return x % m
+
+    def egcd(self, a, b): 
+        if a == 0: return (b, 0, 1) 
+        else: g, y, x = self.egcd(b % a, a) 
+        return (g, x - (b // a) * y, y) 
+  
+
+    def decipher_two_chars(self, indice, message):
         """
         Usando el algoritmo de decifrado, recibiendo una cadena que se asegura que fue cifrada
         previamente con el algoritmo de Hill, obtiene el texto plano correspondiente.
         :param ciphered: El criptotexto de algún mensaje posible.
         :return: El texto plano correspondiente a manera de cadena.
         """
-        det = int(1/self.calculate_key_determinant())
+        det = self.modinv(self.calculate_key_determinant(), 27)
+        print(self.calculate_key_determinant(), "inverso:",det )
         invers = ""
         resolved = ""
         encripted_message = ""
         encripted_number = 0
-        i = 0
+        i = indice
         j = 0
         k = 0
         sqrt_n = int(math.sqrt(len(self.key)))
+        l = 0
         while(j < len(self.key)):
             if(j == 0):
                 encripted_number += det * self.alphabet.find(self.key[3]) * (self.alphabet.find(message[i]))
@@ -94,12 +122,12 @@ class Hill():
             k += 1
             j += 1
             if(j % sqrt_n == 0):
-                i = 0
+                i = indice
                 resolved += self.alphabet[encripted_number%27]
                 encripted_number = 0
         return resolved
-        
-        
+          
+
     def generate_key(self):
         self.key = ""
         
@@ -121,8 +149,7 @@ alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 cipher = None
 key2 = "EBAY"
 
-prueba=Hill(alphabet,4)
-
+prueba=Hill(alphabet,4, "BBBC")
 c1 = prueba.cipher("UN MENSAJE CON Ñ")
 prueba.decipher(c1) == "UNMENSAJECONÑA"
 c2 = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
@@ -130,3 +157,5 @@ c2 = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
 print(prueba.decipher(c1))
 
 print(prueba.decipher(c2))
+
+
