@@ -65,43 +65,57 @@ class Hill():
         return encripted_message
 
 
-    def decipher(self, ciphered):
+    def decipher(self, message):
         """
         Usando el algoritmo de decifrado, recibiendo una cadena que se asegura que fue cifrada
         previamente con el algoritmo de Hill, obtiene el texto plano correspondiente.
         :param ciphered: El criptotexto de algún mensaje posible.
         :return: El texto plano correspondiente a manera de cadena.
         """
-        det = 1/self.calculate_determinant(self.key)
+        det = int(1/self.calculate_key_determinant())
         invers = ""
         resolved = ""
         encripted_message = ""
         encripted_number = 0
-        i = indice
+        i = 0
         j = 0
         k = 0
         sqrt_n = int(math.sqrt(len(self.key)))
         while(j < len(self.key)):
-            encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
+            if(j == 0):
+                encripted_number += det * self.alphabet.find(self.key[3]) * (self.alphabet.find(message[i]))
+            elif(j == 1):
+                encripted_number += det * (-self.alphabet.find(self.key[2])) * (self.alphabet.find(message[i]))
+            elif(j == 2):
+                encripted_number += det * (-self.alphabet.find(self.key[1])) * (self.alphabet.find(message[i]))
+            elif(j == 3):
+                encripted_number += det * self.alphabet.find(self.key[0]) * (self.alphabet.find(message[i]))	
             i += 1
             k += 1
             j += 1
             if(j % sqrt_n == 0):
-                i = indice
+                i = 0
                 resolved += self.alphabet[encripted_number%27]
                 encripted_number = 0
-       
         return resolved
         
         
     def generate_key(self):
         self.key = ""
+        
         for i in range(self.n):
             self.key+= self.alphabet[random.randint(0,self.n)]
+        while(self.calculate_key_determinant() == 0):
+            self.key = ""
+            for i in range(self.n):
+                self.key+= self.alphabet[random.randint(0,self.n)]
+
             
     #Pre: len(key) == 4    
-    def calculate_determinant(self, key):
-        return self.alphabet.find(key[0])*self.alphabet.find(key[3])-self.alphabet.find(key[2])*self.alphabet.find(key[1])  
+    def calculate_key_determinant(self):
+        a = self.alphabet.find(self.key[0])*self.alphabet.find(self.key[3])
+        b = self.alphabet.find(self.key[2])*self.alphabet.find(self.key[1])
+        return a-b  
              
 alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 cipher = None
@@ -109,16 +123,10 @@ key2 = "EBAY"
 
 prueba=Hill(alphabet,4)
 
-cifrado=prueba.cipher("UN MENSAJE CON Ñ")
-
-print(cifrado)
-
-criptotext = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
-print(criptotext)
-
 c1 = prueba.cipher("UN MENSAJE CON Ñ")
-print(c1)
-#print(prueba.decipher(c1) == "UNMENSAJECONÑA")
+prueba.decipher(c1) == "UNMENSAJECONÑA"
 c2 = prueba.cipher("UN MENSAJE DE LONGITUD PAR")
-#print(prueba.decipher(c2) == "UNMENSAJEDELONGITUDPAR")
-print(c2)
+
+print(prueba.decipher(c1))
+
+print(prueba.decipher(c2))
