@@ -1,42 +1,57 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-from __future__ import division
 import os, sys
 import random
+import math
+import numpy as np
+from utils import CryptographyException
+
 class Hill():
 
     def __init__(self, alphabet, n, key=None):
         """
         Constructor de clase, recibiendo un alfabeto completamente necesario pero
         podría no recibir una llave de cifrado, en cuyo caso, hay que generar una,
-        para el caso del tamañHo de la llave, hay que asegurarse que tiene raíz entera.
+        para el caso del tama\xc3Ho de la llave, hay que asegurarse que tiene raíz entera.
         :param alphabet: una cadena con todos los elementos del alfabeto.
-        :param n: el tamaño de la llave, obligatorio siempre.
+        :param n: el tama\xc3o de la llave, obligatorio siempre.
         :param key: una cadena que corresponde a la llave, en caso de ser una llave inválida
         arrojar una CryptographyException.
         """
-    
         self.alphabet = alphabet
         self.n = n
-        if(key):
-            self.key = key
-        elif(key):
-            raise CryptographyException('Invalid key!!')
+        decimal, entera = math.modf(math.sqrt(self.n))
+        if key and decimal==0:
+            self.key = self.generate_key(key)
+        elif key or not decimal==0:
+        	raise CryptographyException()
         else:
-            self.key = generate_key()
+            self.key = self.generate_key()
             
     def cipher(self, message):
-        message = message.replace(" ","")
-        ciphermessage = ""
-        if(len(message)%2 != 0):
-            message += "A"
-        i = 0
-        while(i < len(message)):
-            ciphermessage += self.cipher_two_chars(i,message)
-            i += 2
-        return ciphermessage
+    	"""
+        Aplica el algoritmo de cifrado con respecto al criptosistema de Hill, el cual recordando
+        que todas las operaciones son mod |alphabet|.
+        :param message: El mensaje a enviar que debe ser cifrado.
+        :return: Un criptotexto correspondiente al mensaje, este debe de estar en representación de
+        cadena, no lista.
+        """
+    	message = message.replace(" ","")
+    	ciphermessage = ""
+    	raiz = int(math.sqrt(self.n))
+    	i=0
+    	while i<len(message):
+    		a = []
+    		for j in range(raiz):
+    			a.append(self.alphabet.index(message[i]))
+    			i+=1
+    		matriz=np.array(a).reshape(raiz,1)
+    		mult = np.dot(self.key, a)
+    		ciphermessage += self.cipher_sqrt_chars(mult)
 
-    def cipher_two_chars(self,indice,message):
+    	return ciphermessage
+
+    def cipher_sqrt_chars(self,matriz):
         """
         Funcion auxiliar que hace el cifrado de dos caracteres,utilizando
         el cifrado hill.
@@ -45,56 +60,56 @@ class Hill():
         :param message: el mensaje que queremos cifrar
         :return: un string con los dos caracteres cifrados.
         """
-        encripted_message = ""
-        encripted_number = 0
-        i = indice
-        j = 0
-        k = 0
-        while(j < 4):
-            if(j == 2):
-                i = indice
-                encripted_message += self.alphabet[encripted_number%27]
-                encripted_number = 0
-            encripted_number += self.alphabet.find(self.key[k]) * (self.alphabet.find(message[i]))
-            i += 1
-            k += 1
-            j += 1
-        encripted_message += self.alphabet[encripted_number%27]
-        return encripted_message
+        resultado = ""
+        raiz = int(math.sqrt(self.n))
+        for i in range(raiz):
+        	resultado += self.alphabet[int(matriz[i]%len(self.alphabet))]
+        return resultado
 
+    def decipher(self, message):
+        print(self.key)
+        message = message.replace(" ","")
+        ciphermessage = ""
 
-    def decipher(self, ciphered):
-        """
-        Usando el algoritmo de decifrado, recibiendo una cadena que se asegura que fue cifrada
-        previamente con el algoritmo de Hill, obtiene el texto plano correspondiente.
-        :param ciphered: El criptotexto de algún mensaje posible.
-        :return: El texto plano correspondiente a manera de cadena.
-        """
-        det = 1/calculate_determinant(self.key)
-        invers = ""
-        resolved = ""
-        for i in range(self.n):
-            for j in range(self.n):
-	            invers += self.key[j*self.n+i]*det
-        for i in range(self.n):
-            for j in range(self.n):
-                resolved += chr((invers[i*self.n + j] * ord(ciphered[j]))%27)
-        return resolved
+        raiz = int(math.sqrt(self.n))
+        inversa = np.linalg.inv(self.key)
+        i=0
+        while i<len(message):
+        	a = []
+        	for j in range(raiz):
+        		a.append(self.alphabet.index(message[i]))
+        		i+=1
+        	matriz=np.array(a).reshape(raiz,1)
+        	mult = np.dot(inversa, a)
+        	ciphermessage += self.cipher_sqrt_chars(mult)
+        return ciphermessage
+
+    def generate_key(self, key=None):
+    	raiz=int(math.sqrt(self.n))
+    	b = []
+    	llave=""
+    	if key:
+    	    llave=key
+    	else:
+            for i in range(self.n):
+            	llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
+    	
+    	for j in range(self.n):
+    		b.append(self.alphabet.index(llave[j]))
         
-        
-    def _generate_key(self):
-        self.key = ""
-        for i in range(self.n**2):
-            self.key+=chr(random.randint(self.n))
-            
-        
-        
-alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
-cipher = None
+    	matriz=np.array(b).reshape(raiz,raiz)
+    	determinante=np.linalg.det(matriz)
+    	while determinante==0:
+    		llave=""
+    		b = []
+    		for k in range(self.n):
+    			llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
+    		matriz=np.array(b).reshape(raiz,raiz)
+    		determinante=np.linalg.det(matriz)
+    	return matriz
+
+    
+alphabet = "ABCDEFGHIJKLMN\xc3OPQRSTUVWXYZ"
 key2 = "EBAY"
 
-prueba=Hill(alphabet,4,key2)
-
-cifrado=prueba.cipher("UN MENSAJE CON Ñ")
-
-print(cifrado)
+cipher = Hill(alphabet, 4, "DBBB")

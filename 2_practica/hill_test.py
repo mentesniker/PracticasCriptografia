@@ -9,10 +9,11 @@ cipher = None
 key2 = "EBAY"
 
 def test_init():
-    size = randint(4, 9)
+    #size = randint(4, 9)
+    size = 4
     if size == 4:
         with pytest.raises(CryptographyException):
-            cipher = Hill(alphabet, size, "DBBA")
+            cipher = Hill(alphabet, size, "DBBB")
     elif size == 9:
         with pytest.raises(CryptographyException):
             cipher = Hill(alphabet, size, "DDDABCEFG")
@@ -36,3 +37,5 @@ def test_random_key():
     assert cipher.decipher(c1) == "UNMENSAJECONÑA"
     c2 = cipher.cipher("UN MENSAJE DE LONGITUD PAR")
     assert cipher.decipher(c2) == "UNMENSAJEDELONGITUDPAR"
+
+test_init()
