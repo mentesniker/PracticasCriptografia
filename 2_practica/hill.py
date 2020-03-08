@@ -21,12 +21,10 @@ class Hill():
         self.alphabet = alphabet
         self.n = n
         decimal, entera = math.modf(math.sqrt(self.n))
-        raiz=int(math.sqrt(self.n))
-        matriz=np.array([self.alphabet.find(x) for x in key]).reshape(raiz,raiz)
-        if(len(self.alphabet)%int(np.linalg.det(matriz)) == 0):
-            raise CryptographyException()
         if key and decimal==0:
             self.key = self.generate_key(key)
+            if(len(self.alphabet)%int(np.linalg.det(self.key)) == 0):
+                raise CryptographyException()
         else:
             self.key = self.generate_key()
             
