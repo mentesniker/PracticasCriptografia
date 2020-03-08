@@ -12,9 +12,9 @@ class Hill():
         """
         Constructor de clase, recibiendo un alfabeto completamente necesario pero
         podría no recibir una llave de cifrado, en cuyo caso, hay que generar una,
-        para el caso del tama\xc3Ho de la llave, hay que asegurarse que tiene raíz entera.
+        para el caso del tamaÑHo de la llave, hay que asegurarse que tiene raíz entera.
         :param alphabet: una cadena con todos los elementos del alfabeto.
-        :param n: el tama\xc3o de la llave, obligatorio siempre.
+        :param n: el tamaÑo de la llave, obligatorio siempre.
         :param key: una cadena que corresponde a la llave, en caso de ser una llave inválida
         arrojar una CryptographyException.
         """
@@ -23,7 +23,7 @@ class Hill():
         decimal, entera = math.modf(math.sqrt(self.n))
         if key and decimal==0:
             self.key = self.generate_key(key)
-        elif key or not decimal==0:
+        elif key or decimal!=0:
         	raise CryptographyException()
         else:
             self.key = self.generate_key()
@@ -43,12 +43,14 @@ class Hill():
     	while i<len(message):
     		a = []
     		for j in range(raiz):
-    			a.append(self.alphabet.index(message[i]))
+    			if i<len(message):
+    				a.append(self.alphabet.index(message[i]))
+    			else:
+    				a.append(0)
     			i+=1
     		matriz=np.array(a).reshape(raiz,1)
     		mult = np.dot(self.key, a)
     		ciphermessage += self.cipher_sqrt_chars(mult)
-
     	return ciphermessage
 
     def cipher_sqrt_chars(self,matriz):
@@ -67,9 +69,9 @@ class Hill():
         return resultado
 
     def decipher(self, message):
-        print(self.key)
         message = message.replace(" ","")
         ciphermessage = ""
+
         raiz = int(math.sqrt(self.n))
         inversa = np.linalg.inv(self.key)
         i=0
@@ -108,7 +110,8 @@ class Hill():
     	return matriz
 
     
-alphabet = "ABCDEFGHIJKLMN\xc3OPQRSTUVWXYZ"
+alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 key2 = "EBAY"
 
-cipher = Hill(alphabet, 4, "DBBB")
+cipher = Hill(alphabet, 4, key2)
+criptotext = cipher.cipher("UN MENSAJE CON Ñ")
