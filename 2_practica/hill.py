@@ -70,7 +70,6 @@ class Hill():
         print(self.key)
         message = message.replace(" ","")
         ciphermessage = ""
-
         raiz = int(math.sqrt(self.n))
         inversa = np.linalg.inv(self.key)
         i=0
