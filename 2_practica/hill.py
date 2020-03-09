@@ -4,6 +4,7 @@ import os, sys
 import random
 import math
 import numpy as np
+import sympy as sym
 from utils import CryptographyException
 
 class Hill():
@@ -29,29 +30,29 @@ class Hill():
             self.key = self.generate_key()
             
     def cipher(self, message):
-    	"""
+        """
         Aplica el algoritmo de cifrado con respecto al criptosistema de Hill, el cual recordando
         que todas las operaciones son mod |alphabet|.
         :param message: El mensaje a enviar que debe ser cifrado.
         :return: Un criptotexto correspondiente al mensaje, este debe de estar en representación de
         cadena, no lista.
         """
-    	message = message.replace(" ","")
-    	ciphermessage = ""
-    	raiz = int(math.sqrt(self.n))
-    	i=0
-    	while i<len(message):
-    		a = []
-    		for j in range(raiz):
-    			if i<len(message):
-    				a.append(self.alphabet.index(message[i]))
-    			else:
-    				a.append(0)
-    			i+=1
-    		matriz=np.array(a).reshape(raiz,1)
-    		mult = np.dot(self.key, a)
-    		ciphermessage += self.cipher_sqrt_chars(mult)
-    	return ciphermessage
+        message = message.replace(" ","")
+        ciphermessage = ""
+        raiz = int(math.sqrt(self.n))
+        i=0
+        while i<len(message):
+            a = []
+            for j in range(raiz):
+                if i<len(message):
+                    a.append(self.alphabet.index(message[i]))
+                else:
+                    a.append(0)
+                i+=1
+            matriz=np.array(a).reshape(raiz,1)
+            mult = np.dot(self.key, a)
+            ciphermessage += self.cipher_sqrt_chars(mult)
+        return ciphermessage
 
     def cipher_sqrt_chars(self,matriz):
         """
@@ -65,46 +66,57 @@ class Hill():
         resultado = ""
         raiz = int(math.sqrt(self.n))
         for i in range(raiz):
-        	resultado += self.alphabet[int(matriz[i]%len(self.alphabet))]
+            resultado += self.alphabet[int(matriz[i]%len(self.alphabet))]
         return resultado
+
+    def modInverse(self, a, m): 
+        """Funcion para calcular el
+        inverso de un numero a modulo m, tomado de
+        geeks for geeks
+        """
+        a = a % m; 
+        for x in range(1, m) : 
+            if ((a * x) % m == 1) : 
+                return x 
+        return 1
 
     def decipher(self, message):
         message = message.replace(" ","")
+        raiz=int(math.sqrt(self.n))
         ciphermessage = ""
-
-        raiz = int(math.sqrt(self.n))
-        inversa = np.linalg.inv(self.key)
-        i=0
+        matriz = sym.Matrix(self.key.tolist())
+        inversa = self.modInverse(math.ceil(np.linalg.det(self.key)),len(self.alphabet))
+        mult = (inversa * matriz.adjugate() % len(self.alphabet))
+        i = 0
         while i<len(message):
-        	a = []
-        	for j in range(raiz):
-        		a.append(self.alphabet.index(message[i]))
-        		i+=1
-        	matriz=np.array(a).reshape(raiz,1)
-        	mult = np.dot(inversa, a)
-        	ciphermessage += self.cipher_sqrt_chars(mult)
+            a = []
+            for j in range(raiz):
+                a.append(self.alphabet.index(message[i]))
+                i+=1
+            a = ( mult * sym.Matrix(a) ) % len(self.alphabet)
+            ciphermessage += ''.join([self.alphabet[x] for x in a])
         return ciphermessage
 
     def generate_key(self, key=None):
-    	raiz=int(math.sqrt(self.n))
-    	b = []
-    	llave=""
-    	if key:
-    	    llave=key
-    	else:
+        raiz=int(math.sqrt(self.n))
+        b = []
+        llave=""
+        if key:
+            llave=key
+        else:
             for i in range(self.n):
-            	llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
-    	
-    	for j in range(self.n):
-    		b.append(self.alphabet.index(llave[j]))
+                llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
         
-    	matriz=np.array(b).reshape(raiz,raiz)
-    	determinante=np.linalg.det(matriz)
-    	while determinante==0:
-    		llave=""
-    		b = []
-    		for k in range(self.n):
-    			llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
-    		matriz=np.array(b).reshape(raiz,raiz)
-    		determinante=np.linalg.det(matriz)
-    	return matriz
+        for j in range(self.n):
+            b.append(self.alphabet.index(llave[j]))
+        
+        matriz=np.array(b).reshape(raiz,raiz)
+        determinante=np.linalg.det(matriz)
+        while determinante==0:
+            llave=""
+            b = []
+            for k in range(self.n):
+                llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
+            matriz=np.array(b).reshape(raiz,raiz)
+            determinante=np.linalg.det(matriz)
+        return matriz
