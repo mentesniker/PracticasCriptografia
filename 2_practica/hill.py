@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import os, sys
+#import os, sys
 import random
 import math
 import numpy as np
@@ -112,11 +112,30 @@ class Hill():
         
         matriz=np.array(b).reshape(raiz,raiz)
         determinante=np.linalg.det(matriz)
-        while determinante==0:
+        while( round(determinante) == 0 or self.mcd(round((np.linalg.det(matriz))) % 27, 27) != 1):
             llave=""
             b = []
             for k in range(self.n):
                 llave += self.alphabet[random.randint(0,len(self.alphabet)-1)]
+            
+            for j in range(self.n):
+                b.append(self.alphabet.index(llave[j]))
+        
             matriz=np.array(b).reshape(raiz,raiz)
             determinante=np.linalg.det(matriz)
         return matriz
+    
+    def mcd(self,a, b):
+      resto = 0
+      while(b > 0):
+        resto = b
+        b = a % b
+        a = resto
+      return a
+    
+def test_random_key():
+    cipher = Hill(alphabet, 4)
+    c1 = cipher.cipher("UN MENSAJE CON Ñ")
+    assert cipher.decipher(c1) == "UNMENSAJECONÑA"
+    c2 = cipher.cipher("UN MENSAJE DE LONGITUD PAR")
+    assert cipher.decipher(c2) == "UNMENSAJEDELONGITUDPAR"
