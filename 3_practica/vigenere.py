@@ -50,8 +50,6 @@ class Vigenere():
         	result+=self.alphabet[(self.alphabet.index(ciphered[i])-
         							self.alphabet.index(self.password[i%len(self.password)]))%
         							len(self.alphabet)]
-        if(result[len(result)-3] == "J" and result[len(result)-2] == "O" and result[len(result)-1] == "P"):
-            return ""
         return result
 
 # Se crea un nuevo descifrador de Vigenere
