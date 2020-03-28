@@ -7,6 +7,10 @@ def big_int(size=None):
     menor que 100 o None, entonces la función no le hace caso y genera uno de tamaño arbitrario,
     máximo es de 150 dígitos.
     :return: Un número del tamaño descrito.
+    El algoritmo implementado es linear congruential generator
+    Nos basamos de la pagina http://pi.math.cornell.edu/~mec/Winter2009/Luo/Linear%20Congruential%20Generator/linear%20congruential%20gen1.html
+    para garantizar que no hace un ciclo y empieza a repetir digitos.
+    Esto sucede asi porque m y c son primos relativos y a-1 divide a todos los factores primos de m
     """
     if(size < 100):
         size = 120
