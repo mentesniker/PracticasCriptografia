@@ -40,7 +40,7 @@ def miller_rabin(n):
     	return True
     r, d = discompose(n)
     k = randint(1,3)
-    for i in range(3):
+    for i in range(k):
     	a = randint(2,n-2)
     	x = (a**d) % n
     	if x!=1 and x!=n-1:
@@ -68,7 +68,7 @@ def discompose(n):
 			d+=1
 		r+=1
 		d=1
-	return -1
+	return 1, 1
 
 def wilson(n):
     """
