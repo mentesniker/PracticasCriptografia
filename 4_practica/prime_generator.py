@@ -1,3 +1,7 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+import os, sys
+
 from random import randint
 from random import randrange
 import random
@@ -126,4 +130,5 @@ def wilson(n):
     numbers = list(range(n))
     fact = functools.reduce(operator.mul, numbers[2:len(numbers)], 1)
     return fact%n == -1%n
+
 

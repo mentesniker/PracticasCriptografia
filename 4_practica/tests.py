@@ -1,3 +1,7 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+import os, sys
+
 import prime_generator as gen
 
 primes = [3, 5, 7, 11,
