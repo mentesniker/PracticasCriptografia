@@ -151,5 +151,4 @@ def generate_prime(size=None):
     num = big_int(size)
     while not miller_rabin(num):
     	num = big_int(size)
-    print("Generado!!")
     return num

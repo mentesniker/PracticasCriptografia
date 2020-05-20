@@ -29,11 +29,7 @@ class RSA():
         	e = randint(1, phiN)
         	d = mcd_and_quoef(phiN, e)
         self.pub_key = e
-        print("Llave publica")
-        print(self.pub_key)
         self.priv_key = d
-        print("Llave privada")
-        print(self.priv_key)
         pub_keyFile = open("pub_key.pem",'w')
         priv_keyFile = open("priv_key.pem",'w')
         pub_keyFile.write(str(self.n)+"\n")
@@ -42,7 +38,8 @@ class RSA():
         priv_keyFile.write(str(self.n)+"\n")
         priv_keyFile.write(str(self.priv_key))
         priv_keyFile.close()
-        self.padding_scheme = False
+        self.b = 6
+        self.padding_scheme = True
 
     def __phi__(self):
         """
@@ -61,9 +58,24 @@ class RSA():
         :return: una lista de enteros con el mensaje encriptado.
         """
         cifrado = list()
+        if len(message)%2 != 0:
+        	message += " "
+        i = 0
+        bloque = self.b/2
+        while i < len(message)-1:
+        	num1 = str(ord(message[i]))
+        	num2 = str(ord(message[i+1]))
+        	while len(num2)<bloque:
+        		num2 = "0"+num2
+        	compuesto = int(num1+num2)
+        	numero = pow(compuesto, self.pub_key, self.n)
+        	cifrado.append(numero)
+        	i+=2
+        """
         for m in message:
         	numero = pow(ord(m), self.pub_key, self.n)
         	cifrado.append(numero)
+        """
         return cifrado
 
     def decrypt(self, criptotext):
@@ -74,25 +86,19 @@ class RSA():
         :return: una cadena con el mensaje original.
         """
         message = ""
+        i = 0
+        mitad = self.b/2
+        for c in criptotext:
+        	numero = pow(c, self.priv_key, self.n)
+        	representacion = str(numero)
+        	while len(representacion) < self.b:
+        		representacion = "0"+representacion
+        	caracter1 = representacion[:mitad]
+        	caracter2 = representacion[mitad:]
+        	message += chr(int(caracter1)) + chr(int(caracter2))
+        """
         for c in criptotext:
         	numero = pow(c, self.priv_key, self.n)
         	message += chr(numero%256)
+        """
         return message
-
-
-
-
-c = RSA() 
-
-str_n = str(c.n)
-print(len(str_n) >= 100)
-phi_n = c.__phi__()
-print(prime_relative(phi_n, c.pub_key))
-print((c.pub_key * c.priv_key) % phi_n == 1)
-
-m = "NO DERRAMES LA COCA"
-res = c.encrypt(m)
-if not c.padding_scheme:
-	print(len(res) == len(m))
-print(c.decrypt(res))
-print(c.decrypt(res) == m)
