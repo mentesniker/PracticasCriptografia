@@ -38,7 +38,7 @@ class RSA():
         priv_keyFile.write(str(self.n)+"\n")
         priv_keyFile.write(str(self.priv_key))
         priv_keyFile.close()
-        self.b = 6
+        self.b = 9
         self.padding_scheme = True
 
     def __phi__(self):
@@ -58,19 +58,22 @@ class RSA():
         :return: una lista de enteros con el mensaje encriptado.
         """
         cifrado = list()
-        if len(message)%2 != 0:
+        while len(message)%3 != 0:
         	message += " "
         i = 0
-        bloque = self.b/2
-        while i < len(message)-1:
+        bloque = self.b/3
+        while i < len(message)-2:
         	num1 = str(ord(message[i]))
         	num2 = str(ord(message[i+1]))
+        	num3 = str(ord(message[i+2]))
         	while len(num2)<bloque:
         		num2 = "0"+num2
-        	compuesto = int(num1+num2)
+        	while len(num3)<bloque:
+        		num3 = "0"+num3
+        	compuesto = int(num1+num2+num3)
         	numero = pow(compuesto, self.pub_key, self.n)
         	cifrado.append(numero)
-        	i+=2
+        	i+=3
         """
         for m in message:
         	numero = pow(ord(m), self.pub_key, self.n)
@@ -86,19 +89,19 @@ class RSA():
         :return: una cadena con el mensaje original.
         """
         message = ""
-        i = 0
-        mitad = self.b/2
+        bloque = self.b/3
         for c in criptotext:
         	numero = pow(c, self.priv_key, self.n)
         	representacion = str(numero)
         	while len(representacion) < self.b:
         		representacion = "0"+representacion
-        	caracter1 = representacion[:mitad]
-        	caracter2 = representacion[mitad:]
-        	message += chr(int(caracter1)) + chr(int(caracter2))
+        	caracter1 = representacion[:bloque]
+        	caracter2 = representacion[bloque:bloque*2]
+        	caracter3 = representacion[bloque*2:]
+        	message += chr(int(caracter1)) + chr(int(caracter2)) + chr(int(caracter3))
         """
         for c in criptotext:
         	numero = pow(c, self.priv_key, self.n)
         	message += chr(numero%256)
         """
-        return message
+        return message.strip()
