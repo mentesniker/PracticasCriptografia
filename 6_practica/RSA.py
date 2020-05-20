@@ -89,7 +89,7 @@ class RSA():
         :return: una cadena con el mensaje original.
         """
         message = ""
-        bloque = self.b/3
+        bloque = self.b//3
         for c in criptotext:
         	numero = pow(c, self.priv_key, self.n)
         	representacion = str(numero)
