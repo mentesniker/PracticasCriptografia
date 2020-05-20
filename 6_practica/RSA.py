@@ -98,10 +98,11 @@ class RSA():
         	caracter1 = representacion[:bloque]
         	caracter2 = representacion[bloque:bloque*2]
         	caracter3 = representacion[bloque*2:]
-        	message += chr(int(caracter1)) + chr(int(caracter2)) + chr(int(caracter3))
+        	message += chr(int(caracter1)%256) + chr(int(caracter2)%256) + chr(int(caracter3)%256)
         """
         for c in criptotext:
         	numero = pow(c, self.priv_key, self.n)
         	message += chr(numero%256)
         """
         return message.strip()
+
