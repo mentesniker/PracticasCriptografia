@@ -22,9 +22,9 @@ def test_add_curve():
 def test_scalar_mult():
     one_p = ec.scalar_multiplication(P, 1, c)
     assert c.is_on_curve(one_p)
-    k = 2
+    k = 1
     while one_p != None:
-        one_p = ec.add_points(P, one_p)
         k += 1
+        one_p = ec.add_points(P, one_p, c)
     assert ec.scalar_multiplication(P, k, c) == None
     

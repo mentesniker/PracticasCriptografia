@@ -82,35 +82,3 @@ def scalar_multiplication(p, k, curve):
     if add_points(p, punto, curve) is None:
     	return None
     return (p[0]+punto[0], p[1]+punto[1])
-
-
-
-
-c = Curve(2, 3, 97)
-
-print(c.is_on_curve((17, 10)))
-print(c.is_on_curve((95, 31)))
-print(not c.is_on_curve((13, 13)))
-print(c.is_on_curve(None))
-print(c.determinant() == 275)
-
-P, Q = (17, 10), (95, 31)
-
-p_plus_q = add_points(P, Q, c)
-print(p_plus_q)
-print(c.is_on_curve(p_plus_q))
-inf = add_points(P, (17, 87), c)
-print(c.is_on_curve(inf) and inf == None)
-p_plus_p = add_points(P, P, c)
-print(c.is_on_curve(p_plus_p))
-
-one_p = scalar_multiplication(P, 1, c)
-print(c.is_on_curve(one_p))
-k = 1
-while one_p != None:
-	k += 1
-	one_p = add_points(P, one_p, c)	
-print(scalar_multiplication(P, k, c))
-print(P)
-print(k)
-print(scalar_multiplication(P, k, c) == None)
