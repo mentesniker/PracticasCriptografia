@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
-from sympy.core.numbers import mod_inverse
+from utils import modinv
 
 class Curve():
 
@@ -54,6 +54,8 @@ def add_points(p, q, curve):
         return p
     if p[0]==q[0] and -p[1]==q[1]:
         return None
+    if p[0]==q[0]:
+    	return None
     lambdaC = calculate_lambda(p, q, curve)
     x3 = pow(lambdaC, 2) - p[0] - q[0]
     y3 = (lambdaC * (p[0]-x3)) - p[1]
@@ -62,7 +64,7 @@ def add_points(p, q, curve):
 def calculate_lambda(p, q, curve):
 	if p==q:
 		return (3*pow(p[0],2) + curve.A) * modinv(2*p[1], curve.p)
-	return (p[1]-q[1]) * modinv((p[0]-q[0]), curve.p)
+	return (p[1]-q[1]) * modinv((p[0]-q[0])%curve.p, curve.p)
 
 def scalar_multiplication(p, k, curve):
     """
@@ -77,19 +79,21 @@ def scalar_multiplication(p, k, curve):
     if k==1:
     	return p
     punto = scalar_multiplication(p, k-1, curve)
+    if add_points(p, punto, curve) is None:
+    	return None
     return (p[0]+punto[0], p[1]+punto[1])
 
 
 
 
 c = Curve(2, 3, 97)
-"""
+
 print(c.is_on_curve((17, 10)))
 print(c.is_on_curve((95, 31)))
 print(not c.is_on_curve((13, 13)))
 print(c.is_on_curve(None))
 print(c.determinant() == 275)
-"""
+
 P, Q = (17, 10), (95, 31)
 
 p_plus_q = add_points(P, Q, c)
@@ -100,12 +104,13 @@ print(c.is_on_curve(inf) and inf == None)
 p_plus_p = add_points(P, P, c)
 print(c.is_on_curve(p_plus_p))
 
-
-
 one_p = scalar_multiplication(P, 1, c)
 print(c.is_on_curve(one_p))
 k = 1
 while one_p != None:
 	k += 1
-	one_p = add_points(P, one_p, c)
+	one_p = add_points(P, one_p, c)	
+print(scalar_multiplication(P, k, c))
+print(P)
+print(k)
 print(scalar_multiplication(P, k, c) == None)
