@@ -52,13 +52,11 @@ def add_points(p, q, curve):
         return q
     if q is None:
         return p
-    if p[0]==q[0] and -p[1]==q[1]:
+    if p[0]==q[0] and p[1]!=q[1]:
         return None
-    if p[0]==q[0]:
-    	return None
     lambdaC = calculate_lambda(p, q, curve)
-    x3 = pow(lambdaC, 2) - p[0] - q[0]
-    y3 = (lambdaC * (p[0]-x3)) - p[1]
+    x3 = (pow(lambdaC, 2) - p[0] - q[0]) % curve.p
+    y3 = ((lambdaC * (p[0]-x3)) - p[1]) % curve.p
     return (x3, y3)
 
 def calculate_lambda(p, q, curve):
@@ -79,6 +77,4 @@ def scalar_multiplication(p, k, curve):
     if k==1:
     	return p
     punto = scalar_multiplication(p, k-1, curve)
-    if add_points(p, punto, curve) is None:
-    	return None
-    return (p[0]+punto[0], p[1]+punto[1])
+    return add_points(p, punto, curve)
