@@ -61,7 +61,7 @@ def add_points(p, q, curve):
 
 def calculate_lambda(p, q, curve):
 	if p==q:
-		return (3*pow(p[0],2) + curve.A) * modinv(2*p[1], curve.p)
+		return (3*pow(p[0],2) + curve.A) * modinv(2*p[1]%curve.p, curve.p)
 	return (p[1]-q[1]) * modinv((p[0]-q[0])%curve.p, curve.p)
 
 def scalar_multiplication(p, k, curve):
